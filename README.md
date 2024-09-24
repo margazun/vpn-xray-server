@@ -5,7 +5,7 @@
 [How to Create an Xray VLESS XTLS Server on Ubuntu 20.04](https://v2how.github.io/post/2021-02-12-xray-vless-xtls-server-ubuntu-20-04/)
 
 ## Хостер сервера
-Выбрал сервер у хостера [62YUN](62yun.ru/?refid=164653)
+Выбрал сервер у хостера [62YUN](https://62yun.ru/?refid=164653)
 
 ![Тариф](img/tariff.png)
 
