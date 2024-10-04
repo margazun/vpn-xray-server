@@ -2,7 +2,7 @@
 ### Источники
 [Обход блокировок: настройка сервера XRay для Shadowsocks-2022 и VLESS с XTLS-Vision, Websockets и фейковым веб-сайтом](https://habr.com/ru/articles/728836/)
 
-[How to Create an Xray VLESS XTLS Server on Ubuntu 20.04](https://v2how.github.io/post/2021-02-12-xray-vless-xtls-server-ubuntu-20-04/)
+[How to Create agit n Xray VLESS XTLS Server on Ubuntu 20.04](https://v2how.github.io/post/2021-02-12-xray-vless-xtls-server-ubuntu-20-04/)
 
 ## Хостер сервера
 Выбрал сервер у хостера [62YUN](https://62yun.ru/index)
@@ -34,7 +34,7 @@
 ssh-keygen
 ```
 После выполнения команды в директории **/root/.ssh/** появится два файла вида **id_<id>** и **id_<id>.pub**
-Файл **id_<id>** - это **приватный ключ**. Файл **id_<id>.pub** - это **кубличный ключ**. Копируем оба файла себе на машину.
+Файл **id_<id>** - это **приватный ключ**. Файл **id_<id>.pub** - это **публичный ключ**. Копируем оба файла себе на машину.
 
 Выполняем комманды в консоли, заменив **ПУБЛИЧНЫЙ_КЛЮЧ** именем файла публичного ключа.
 ```
@@ -133,7 +133,7 @@ systemctl status nginx
 certbot certonly --standalone --preferred-challenges http -d example.com -d www.example.com
 ```
 Здесь **example.com** - имя нашего домена.
-**Certbot** запросит e-mail, его нужно дать, чтобы, например, в случае невожможности выпуска сертификата или каких-либо других проблем предупредить.
+**Certbot** запросит e-mail, его нужно дать, чтобы, например, в случае невозможности выпуска сертификата или каких-либо других проблем предупредить.
 
 Потом предложит согласиться с его условиями - нужно будет согласиться (Y).
 
@@ -158,6 +158,7 @@ openssl rand -base64 16
 apt install uuid
 uuid -v 4
 ```
+*Можно использовать один ключ на всех, но удобней каждому пользователю выдать по ключу, который потом можно будет легко удалить.*
 
 * Загадочный ничего не значащий путь, который будет использоваться для конфигурирования **VLESS over Websockets**.
 
@@ -340,7 +341,7 @@ systemctl restart xray
 journalctl -u xray
 ```
 
-# Настройка роутера
+# Настройка на роутере под управлением **OpenWRT** подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN
 
 * [Источник](https://github.com/itdoginfo/domain-routing-openwrt/tree/master)
 
@@ -423,6 +424,8 @@ service sing-box restart
 
 ## Устанавливаем на роутер шифрование DNS-запросов
 
+*Шифрование DNS-запросов необходимо для получения правильного **ip-адреса**, если провайдер перехватывает DNS-запросы и вместо правильного **ip-адреса** выдает фейковый.*
+
 Запускаем вновь скрипт
 ```
 sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwrt/master/getdomains-install.sh)
@@ -431,7 +434,7 @@ sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwr
 * На запрос выбора приложения шифрования DNS выбираем **Stubby**: 3
 * На запрос выбора страны выбираем **Skip script creation**: 4
 
-## Клиент для Android
+## Клиент для Android и Windows
 Клиентов для подключения к **vpn-серверам** великое множество. Можно выбрать любой.
 Мне понравился [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases).
 
@@ -450,3 +453,6 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 
 *Все данные для подключения протоколов берутся из файла **/opt/xray/config.json** из раздела **inbounds**, где описан протокол **shadowsocks**.*
 
+*Можно облегчить себе жизнь, установив программу на PC, настроив подключения, а затем поделиться с мобильным устройством настройками через **QR-код**.*
+
+Всем добра и удачи
