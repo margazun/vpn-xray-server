@@ -59,7 +59,7 @@ exit
 и мы зашли на сервер, значит будем отключать вход по паролю по SSH.
 Открываем файл **/etc/ssh/sshd-config**
 
-![](img/ssh-config-edit.png)
+![sshd_config](img/ssh-config-edit.png)
 
 Находим в нем строчку
 
