@@ -167,7 +167,13 @@ systemctl status nginx
 ### Устанавливаем XRay
 #### Что нам нужно
 * SSL-сертификаты для нашего фейкового домена.
+
+Проверяем, что 80 порт свободен
+```
+ss -tuln
+```
 Запрашиваем их через **certbot**.
+
 ```
 certbot certonly --standalone --preferred-challenges http -d example.com -d www.example.com
 ```
