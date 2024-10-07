@@ -85,6 +85,45 @@ systemctl restart ssh
 ```
 apt update && apt upgrade -y
 ```
+
+### Немного защитим сервер
+Установим **fail2ban** и **ipset**
+```
+apt install fail2ban ipset -y
+```
+Создаем файл конфигурации
+```
+cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+```
+В Action находим строки
+```
+banaction = iptables-multiport
+banaction_allports = iptables-allports
+```
+и зменяем их на
+```
+banaction = iptables-ipset-proto6
+banaction_allports = iptables-ipset-proto6-allports
+```
+Создаем файл экшена, чтобы ответ заблокированному ip вообще не отправлялся
+```
+touch /etc/fail2ban/action.d/iptables-blocktype.local
+```
+В файл вносим
+```
+[Init]
+blocktype = DROP
+```
+Перезапускаем fail2ban
+```
+service fail2ban restart
+```
+
+Чтобы посмотреть статус блокировки, например, ssh
+```
+fail2ban-client status sshd
+```
+
 ### Устанавливаем **certbot**
 ```
 snap install core
