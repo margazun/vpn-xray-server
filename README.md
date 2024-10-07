@@ -95,7 +95,7 @@ apt install fail2ban ipset -y
 ```
 cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 ```
-В Action находим строки
+В файле **/etc/fail2ban/jail.local** в разделе **Action** находим строки
 ```
 banaction = iptables-multiport
 banaction_allports = iptables-allports
