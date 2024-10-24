@@ -42,6 +42,13 @@ cd /root/.ssh
 cat ПУБЛИЧНЫЙ_КЛЮЧ > authorized_keys
 ```
 
+Установим правильные разрешения
+```
+chown -R root:root /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+chmod 700 /root/.ssh
+```
+
 Теперь мы должны иметь возможность подключаться по SSH с приватным ключем.
 
 Закрываем сессию
@@ -132,7 +139,7 @@ snap install --classic certbot
 ```
 ### Устанавливает **nginx**
 ```
-apt install nginx -y
+apt install nginx-full -y
 ```
 * Конфигурируем фейковый сайт, который будет использоваться для камуфляжа
 
