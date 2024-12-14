@@ -573,7 +573,7 @@ sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwr
 
 ![server_proxy](img/nekobox--proxy-start.png)
 
-Всё! Можем сходить на [сайт](https://2ip.ru), проверить на ip адрес.
+Всё! Можем сходить на [сайт](https://2ip.ru), проверить наш ip адрес.
 
 Сервис должен показать, что вы Нидерландах.
 
