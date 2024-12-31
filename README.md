@@ -579,6 +579,37 @@ sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwr
 
 ![ip](img/nekobox-location.png)
 
+### Настройка фильтрации трафика
+
+Заходим в **Настройки** -> **Настройки маршрутов**
+
+![setting](img/nekobox-routes.png)
+
+Добавляем в **Базовые маршруты**
+
+в **IP** - **Напрямую**
+
+```
+geoip:ru
+geoip:private
+```
+
+в **Домен** - **Напрямую**
+
+```
+domain:ru
+```
+
+**Outbound по-умолчанию** ставим в значение **proxy**
+
+![routes](img/nekobox-routes-base.png)
+
+Проверяем, что фильтрация работает.
+
+Заходим на сайт [2ip.ru/](https://2ip.ru/) - должен показать российский ip.
+
+Заходим на сайт [whoer.net](https://whoer.net/ru) - должен показать нидерландский ip.
+
 ## Клиент для Android
 
 Клиентов для подключения к **vpn-серверам** великое множество. Можно выбрать любой.
