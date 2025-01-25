@@ -1,36 +1,41 @@
 # Установка VPN сервера для обхода блокировок
 ## Содержание
 1. [Что потребуется](#whatNeeds)
-1. [Выбор хостинга и конфигурация сервера](#Хостер сервера)
-    - [Создание сервера](#Создание сервера)
-1. [Настройка сервера](#Настройка сервера)
-    - [Настройка ssh-подключения](#Настройка ssh-подключения)
-    - [Обновление системы и установка необходимых пакетов](#Обновление системы и установка необходимых пакетов)
-      - [Защита сервера](#Немного защитим сервер)
-      - [Установка Certbot](#Устанавливаем certbot)
-      - [Установка NGINX](#Устанавливаем nginx)
-      - [Установка XRay](#Устанавливаем XRay)
-        - [Предварительная подготовка](#Что нам нужно)
-        - [Установка](#Приступаем к установке)
-        - [Настройка](#Настраиваем XRay)
-    - [Добавление ежедневной перезагрузки сервера](#Добавим ежедневный рестарт сервера)
-1. [Настройка клиентов для подключения к серверу](#Настройка клиентов для подключения к серверу)
-    - [Установка и настройка клиента для Windows](#Установка и настройка клиента для Windows)
-        - [Установка и запуск NekoBox](#Установка и запуск NekoBox)
-        - [Настройка NekoBox](#Настройка NekoBox)
-          - [Настройка подключений](#Настройка подключений)
-            - [Настройка профиля подключения типа Shadowsocks](#Настройка профиля подключения типа Shadowsocks)
-            - [Настройка профиля подключения типа VLESS](#Настройка профиля подключения типа VLESS)
-            - [Настройка профиля подключения типа VLESS over Websocket](#Настройка профиля подключения типа VLESS over Websocket)
-          - [Настройка фильтрации трафика в NekoBox](#Настройка фильтрации трафика в NekoBox)
-    - [Установка и настройка клиент для Android](#Клиент для Android)
-        - [Настройка подключений](#Настройка подключений)
-        - [Настройка маршрутизации трафика](#Настройка маршрутизации трафика)
-   - [Установка и настройка на роутере под управлением **OpenWRT** подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN](#Настройка на роутере под управлением OpenWRT подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN)
-       - [Установка на роутер Sing-box](#Устанавливаем на роутер Sing-box)
-       - [Настройка Sing-box](#Настройка Sing-box)
-       - [Установка на роутере шифрование DNS-запросов](#Устанавливаем на роутер шифрование DNS-запросов)
-       - [Добавляем ежедневную перезагрузку роутера](#Добавляем ежедневную перезагрузку роутера)
+1. [Выбор хостинга и конфигурация сервера](#hoster)
+    - [Создание сервера](#create-server)
+1. [Настройка сервера](#setup-server)
+    - [Настройка ssh-подключения](#setup-ssh)
+    - [Обновление системы и установка необходимых пакетов](#update-system-install-packets)
+      - [Защита сервера](#fail2ban)
+      - [Установка Certbot](#certbot)
+      - [Установка NGINX](#nginx)
+      - [Установка XRay](#xray)
+        - [Предварительная подготовка](#xray-what-needs)
+        - [Установка](#xray-install)
+        - [Настройка](#xray-setup)
+    - [Добавление ежедневной перезагрузки сервера](#server-restart)
+1. [Настройка клиентов для подключения к серверу](#clients)
+    - [Установка и настройка клиента для Windows](#clients-windows)
+        - [Установка и запуск NekoBox](#clients-windows-install)
+        - [Настройка NekoBox](#clients-windows-setup)
+          - [Настройка подключений](#clients-windows-setup-servers)
+            - [Настройка профиля подключения типа Shadowsocks](#clients-windows-setup-servers-shadowsocks)
+            - [Настройка профиля подключения типа VLESS](#clients-windows-setup-servers-vless)
+            - [Настройка профиля подключения типа VLESS over Websocket](#clients-windows-setup-servers-vless)
+          - [Настройка фильтрации трафика в NekoBox](#clients-windows-setup-routes)
+    - [Установка и настройка клиент для Android](#clients-android)
+        - [установка](#clients-android-install)
+          - [Как определить платформу](#clients-android-platform-detect)
+        - [Настройка подключений](#clients-android-setup)
+          - [Настройка подключений](#clients-android-setup-connections)
+        - [Настройка маршрутизации трафика](#clients-android-setup-routes)
+   - [Установка и настройка на роутере под управлением **OpenWRT** подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN](#clients-openwrt)
+       - [Установка на роутер Sing-box](#clients-openwrt-sing-box-install)
+         - [Настройка Sing-box](#clients-openwrt-sing-box-setup)
+       - [Установка на роутере шифрование DNS-запросов](#clients-openwrt-dns-resolve)
+       - [Добавляем ежедневную перезагрузку роутера](#clients-openwrt-server-restart)
+       - [Как добавить сайты в список](#clients-openwrt-add-domains-to-list)
+1. [Как очистить DNS-кэш в Windows](#windows-dns-cash-clean)
 
 
 
@@ -48,7 +53,10 @@
 * SSH-клиент для подключения. Консоль не очень удобна. Использую [MobaXterm](https://mobaxterm.mobatek.net/download.html).
 * Операционная система Linux. Я выбрал Ubuntu 24.04 LTS.
 
+<a name="hoster">
+
 ## Хостер сервера
+
 Выбрал сервер у хостера [62YUN](https://62yun.ru/?refid=164653)
 
 ![Тариф](img/tariff.png)
@@ -56,6 +64,8 @@
 ![Пояснения о VPN](img/about-vpn.png)
 Можно платить картой МИР
 ![Метод оплаты](img/payment-method.png)
+
+<a name="create-server">
 
 ## Создание сервера
 
@@ -71,8 +81,11 @@
 
 ![Создание сервера](img/create-server.png)
 
+<a name="setup-server">
 
 ## Настройка сервера
+
+<a name="setup-ssh">
 
 ### Настройка ssh-подключения
 В MobaXterm создаем новую SSH-сессию
@@ -140,18 +153,26 @@ systemctl restart ssh
 
 Отключаемся и пробуем еще раз зайти на сервер)))
 
+<a name="update-system-install-packets">
+
 ## Обновление системы и установка необходимых пакетов
 
 ```
 apt update && apt upgrade -y
 ```
 
+<a name="fail2ban">
+
 ### Немного защитим сервер
+
 Установим **fail2ban** и **ipset**
+
 ```
 apt install fail2ban ipset -y
 ```
+
 Создаем файл конфигурации
+
 ```
 cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 ```
@@ -174,22 +195,30 @@ touch /etc/fail2ban/action.d/iptables-blocktype.local
 [Init]
 blocktype = DROP
 ```
+
 Перезапускаем fail2ban
+
 ```
 service fail2ban restart
 ```
 
 Чтобы посмотреть статус блокировки, например, ssh
+
 ```
 fail2ban-client status sshd
 ```
+<a name="certbot">
 
 ### Устанавливаем **certbot**
+
 ```
 snap install core
 snap refresh core
 snap install --classic certbot
 ```
+
+<a name="nginx">
+
 ### Устанавливаем **nginx**
 ```
 apt install nginx-full -y
@@ -224,8 +253,14 @@ systemctl restart nginx
 systemctl status nginx
 ```
 
+<a name="xray">
+
 ### Устанавливаем XRay
+
+<a name="xray-what-needs">
+
 #### Что нам нужно
+
 * SSL-сертификаты для нашего фейкового домена.
 
 Проверяем, что 80 порт свободен
@@ -269,7 +304,10 @@ uuid -v 4
 
 Можно придумать самому, можно использовать он-лайн генератор (я использовал [этот](https://www.random.org/strings/?num=1&len=32&digits=on&loweralpha=on&unique=on&format=html&rnd=new)).
 
+<a name="xray-install">
+
 #### Приступаем к установке
+
 * Идем [сюда](https://github.com/XTLS/Xray-core/releases) и выбираем последний релиз. У меня был [1.8.24](https://github.com/XTLS/Xray-core/releases/tag/v1.8.24).
 * Копируем адрес ссылки на архив **Xray-linux-64.zip**.
 В терминале скачиваем архив
@@ -307,6 +345,8 @@ WantedBy=multi-user.target
 systemctl daemon-reload
 systemctl enable xray
 ```
+
+<a name="xray-setup">
 
 ### Настраиваем **XRay**
 * Создаем файл конфигурации
@@ -446,7 +486,10 @@ systemctl restart xray
 journalctl -u xray
 ```
 
+<a name="server-restart">
+
 ### Добавим ежедневный рестарт сервера
+
 Добавим задачу в **cron**
 ```
 crontab -e
@@ -461,12 +504,18 @@ crontab -e
 
 Выходим **Ctrl+X**
 
+<a name="clients">
+
 # Настройка клиентов для подключения к серверу
 
 Сначала настроим клиент для **Windows**, проверим его работу со всеми подключениями, затем используя уже готовые конфигурации подключений,
 выполним установку и настройку клиентов для **Android** и для роутера, работающего на **OpenWRT**
 
+<a name="clients-windows">
+
 ## Установка и настройка клиента для Windows
+
+<a name="clients-windows-install">
 
 ### Установка и запуск NekoBox
 
@@ -490,9 +539,15 @@ crontab -e
 
 Возможно, что перед запуском *nekoray* потребует установку дополнительных библиотек. Лежат они [здесь](https://aka.ms/vs/17/release/vc_redist.x64.exe).  
 
+<a name="clients-windows-setup">
+
 ### Настройка NekoBox
 
+<a name="clients-windows-setup-servers">
+
 #### Настройка подключений
+
+<a name="clients-windows-setup-servers-shadowsocks">
 
 ##### Настройка профиля подключения типа Shadowsocks
 
@@ -534,17 +589,21 @@ crontab -e
 
 Внизу в **Журнале** смотрим результаты тестов.
 
+<a name="clients-windows-setup-servers-vless">
+
 ##### Настройка профиля подключения типа VLESS
 
-Аналогично добавляем профиль **VLESS**
+Аналогично добавляем профиль **VLESS**, подставляя свои значения из файла конфигурации **xray**.
 
 ![server_vless](img/nekobox-server-vless.png)
 
 Также проверяем профиль.
 
-##### Настройка профиля подключения типа VLESS over Websocket
+<a name="clients-windows-setup-servers-vless-over-websockets">
 
-Аналогично добавляем профиль **VLESS over Websocket**
+##### Настройка профиля подключения типа VLESS over Websockets
+
+Аналогично добавляем профиль **VLESS over Websocket**, подставляя свои значения из файла конфигурации **xray**.
 
 ![server_vless](img/nekobox-server-vless-over-websocket.png)
 
@@ -562,6 +621,8 @@ crontab -e
 Сервис должен показать, что вы Нидерландах.
 
 ![ip](img/nekobox-location.png)
+
+<a name="clients-windows-setup-routes">
 
 ### Настройка фильтрации трафика в NekoBox
 
@@ -594,15 +655,18 @@ domain:ru
 
 Заходим на сайт [whoer.net](https://whoer.net/ru) - должен показать нидерландский ip.
 
-## Клиент для Android
+<a name="clients-android">
 
-Клиентов для подключения к **vpn-серверам** великое множество. Можно выбрать любой.
-Мне понравился [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases).
+## Клиент для Android
 
 На момент написания последний релиз был **1.2.9** доступен для скачивания на [странице](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases/tag/1.2.9).
 Выбираем нужную платформу, скачиваем и запускаем.
 
+<a name="clients-android-install">
+
 ### Установка NekoBox для Android
+
+<a name="clients-android-platform-detect">
 
 #### Как определить нужную платформу
 
@@ -612,12 +676,18 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 ```
 **arm64-v8a** - это то что мне нужно )))
 
+![nekobox_download](img/nekobox-android-download.png)
+
 - Скачиваем на свой телефон программу.
 - Устанавливаем. Возможно, нужно будет включить возможность установки из других источников.
 - Запускаем программу.
 - Приступаем к настройке.
 
+<a name="clients-android-setup">
+
 ### Настройка NekoBox для Android
+
+<a name="clients-android-setup-connections">
 
 #### Настройка подключений
 
@@ -637,6 +707,8 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 ![config_added](img/nekobox-android-config-added.jpg)
 
 Добавляем аналогично все остальные подключениями.
+
+<a name="clients-android-setup-routes">
 
 #### Настройка маршрутизации трафика
 
@@ -678,6 +750,7 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 
 Значит трафик до российских сайтов идет напрямую через провайдера, а трафик до зарубежных сайтов идет через **vpn**.
 
+<a name="clients-openwrt">
 
 ## Настройка на роутере под управлением **OpenWRT** подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN
 
@@ -696,6 +769,8 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 * Настроенный доступ по протоколу **shadowsocks**, его будем использовать на роутере.
 * Роутер с установленной **OpenWRT** и подключенный к интернету.
 
+<a name="clients-openwrt-sing-box-install">
+
 ### Устанавливаем на роутер Sing-box
 
 Подключаемся к роутеру по **SSH**
@@ -709,6 +784,8 @@ sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwr
 * На запрос выбора туннеля выбираем **Sing-box**: 3
 * На запрос выбора приложения шифрования DNS запросов пока выбираем **No**: 1
 * На запрос выбора страны выбираем **Russia inside**: 1
+
+<a name="clients-openwrt-sing-box-setup">
 
 ### Настройка Sing-box
 
@@ -760,6 +837,8 @@ service sing-box restart
 ```
 Теперь трафик до заблокированных сайтов должен ходить через **vpn-сервер**, а весь остальной через местного провайдера.
 
+<a name="clients-openwrt-dns-resolve">
+
 ### Устанавливаем на роутер шифрование DNS-запросов
 
 *Шифрование DNS-запросов необходимо для получения правильного **ip-адреса**, если провайдер перехватывает DNS-запросы и вместо правильного **ip-адреса** выдает фейковый.*
@@ -771,6 +850,8 @@ sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwr
 * На запрос выбора туннеля выбираем **Skip this step**: 5
 * На запрос выбора приложения шифрования DNS выбираем **Stubby**: 3
 * На запрос выбора страны выбираем **Skip script creation**: 4
+
+<a name="clients-openwrt-server-restart">
 
 ## Добавляем ежедневную перезагрузку роутера
 
@@ -786,19 +867,26 @@ crontab -e
 ```
 Роутер будет перегружаться ежедневно в 04:00
 
-# Как добавить сайты в список
+<a name="clients-openwrt-add-domains-to-list">
+
+## Как добавить сайты в список
+
 Если нужно добавить сайт в список, нужно посмотреть в браузере куда отправляет запросы недоступная страница.
 
 Нужно попытаться загрузить страницу, после в консоли браузера выполнить команду
-```
-console.log(["config ipset\nlist name 'vpn_domains'"].concat([...new Set(performance.getEntriesByType('resource').map(r => (new URL(r.name).hostname)))].map(res => (`list domain '${res}'`))).join('\n'));
 
 ```
+console.log(["config ipset\nlist name 'vpn_domains'"].concat([...new Set(performance.getEntriesByType('resource').map(r => (new URL(r.name).hostname)))].map(res => (`list domain '${res}'`))).join('\n'));
+```
+
 В консоли будет список всех доменов, к которым обращалась страница. Возможно, какие-то домены уже есть в списке, а какие-то не нужны. Нужно сравнить домены с теми, что храняться в файле **/tmp/dnsmasq.d/domains.lst**
 и внести в файл **/etc/config/dhcp** в том виде, который получится в консоли. После внесения изменений нужно перегрузить dhcp сервер.
+
 ```
 service odhcpd restart
 ```
+
+<a name="windows-dns-cash-clean">
 
 # Очистка DNS-кэша
 В Windows в командной строке ввести
