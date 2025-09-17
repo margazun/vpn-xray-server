@@ -758,13 +758,19 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 
 ## Настройка на роутере под управлением **OpenWRT** подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN
 
-* [Источник](https://github.com/itdoginfo/domain-routing-openwrt/tree/master)
+* [Источник](https://podkop.net/)
 
 Особая благодарность [Автору](https://github.com/itdoginfo). Благодаря его работе почти все делается автоматически.
 
-На роутере должна быть установлена операционная система **OpenWRT**. И должно быть место для установки пакетов - обычно используют USB флешку, я использовал для этих целей жесткий диск, который подключен к порту USB роутера.
+На роутере должна быть установлена операционная система **OpenWRT**.
 
 Как выбрать роутер и установить на него **OpenWRT** можно почитать в [блоге](https://itdog.info/kakoj-router-dlya-openwrt-kupit-v-2025-godu/) того же автора.
+
+Я установил все на роутер **Xiaomi Mi Router AX3000T**
+
+![ozon](img/mi-router-ax3000t-ozon.png)
+
+Можно поискать такой и на других площадках.
 
 ### Что нужно для продолжения работы
 
@@ -775,21 +781,16 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 
 <a name="clients-openwrt-sing-box-install">
 
-### Устанавливаем на роутер Sing-box
+### Устанавливаем на роутер Podkop
 
 Подключаемся к роутеру по **SSH**
 
 В терминале вводим
 ```
-sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwrt/master/getdomains-install.sh)
+sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/podkop/refs/heads/main/install.sh)
 ```
-В процессе работы скрипта отвечаем на вопросы:
 
-* На запрос выбора туннеля выбираем **Sing-box**: 3
-* На запрос выбора приложения шифрования DNS запросов пока выбираем **No**: 1
-* На запрос выбора страны выбираем **Russia inside**: 1
-
-<a name="clients-openwrt-sing-box-setup">
+<a name="clients-openwrt-podkop-setup">
 
 ### Настройка Sing-box
 
