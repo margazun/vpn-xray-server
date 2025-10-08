@@ -30,12 +30,11 @@
           - [Настройка подключений](#clients-android-setup-connections)
         - [Настройка маршрутизации трафика](#clients-android-setup-routes)
    - [Установка и настройка на роутере под управлением **OpenWRT** подключения к нашему VPN-серверу и перенаправление трафика к заблокированным ресурсам через VPN](#clients-openwrt)
-       - [Установка на роутер Sing-box](#clients-openwrt-sing-box-install)
-         - [Настройка Sing-box](#clients-openwrt-sing-box-setup)
-       - [Установка на роутере шифрование DNS-запросов](#clients-openwrt-dns-resolve)
+       - [Установка на роутер Podkop](#clients-openwrt-podkop-setup)
        - [Добавляем ежедневную перезагрузку роутера](#clients-openwrt-server-restart)
        - [Как добавить сайты в список](#clients-openwrt-add-domains-to-list)
 1. [Как очистить DNS-кэш в Windows](#windows-dns-cash-clean)
+1. [Что еще можно поставить на этот сервер](#add-more)
 
 
 
@@ -774,12 +773,11 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 
 ### Что нужно для продолжения работы
 
-* **VDS сервер** за пределами страны.
+* **VDS сервер** за пределами страны (у нас такой уже есть).
 * Настроенный на нем **VPN сервер**
-* Настроенный доступ по протоколу **shadowsocks**, его будем использовать на роутере.
 * Роутер с установленной **OpenWRT** и подключенный к интернету.
 
-<a name="clients-openwrt-sing-box-install">
+<a name="clients-openwrt-podkop-setup">
 
 ### Устанавливаем на роутер Podkop
 
@@ -789,72 +787,30 @@ Telegram для Android v11.1.3(5244) store bundled arm64-v8a
 ```
 sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/podkop/refs/heads/main/install.sh)
 ```
+В процессе установки отвечаем на вопросы, если захочется, можно поставить
+русский интерфейс в **LuCI**, я не стал его устанавливать.
 
-<a name="clients-openwrt-podkop-setup">
+Заходим на роутер с компьютера в домашней сети.
+После установки **podkop** должен появится в меню **Services** пункт **Podkop**.
 
-### Настройка Sing-box
+![services-podkop](img/router-setup/router-setup-001.png)
 
-Открываем файл **/etc/sing-box/config.json**
+В настройках устанавливаем параметры своего сервера
 
-![config.json](img/sing-box-config.png)
+![services-podkop-setup](img/router-setup/router-setup-002.png)
 
-И вносим данные нашего **vpn-сервера**
-```
-{
-  "log": {
-    "level": "debug"
-  },
-  "inbounds": [
-    {
-      "type": "tun",
-      "interface_name": "tun0",
-      "domain_strategy": "ipv4_only",
-      "inet4_address": "172.16.250.1/30",
-      "auto_route": false,
-      "strict_route": false,
-      "sniff": true 
-   }
-  ],
-  "outbounds": [
-    {
-      "type": "shadowsocks",
-      "server": "<ИМЯ ДОМЕНА>",
-      "server_port": <ПОРТ>,
-      "method": "<МЕТОД ШИФРОВАНИЯ>",
-      "password": "<ПАРОЛЬ>"
-    }
-  ],
-  "route": {
-    "auto_detect_interface": true
-  }
-}
-```
-Проверяем:
-* **"inet4_address": "172.16.250.1/30"** - не совпадает ни с одним диапазоном настроенной локальной сети.
-* **<ИМЯ ДОМЕНА>** указываем имя нашего домена vpn-сервера. *Берется из файла **/opt/xray/config.json** из раздела **inbounds**, где описан протокол **shadowsocks**.*
-* **<ПОРТ>** - порт на котором работает **shadowsocks**. *Берется из файла **/opt/xray/config.json** из раздела **inbounds**, где описан протокол **shadowsocks**.*
-* **<МЕТОД ШИФРОВАНИЯ>** - метод шифрования. *Берется из файла **/opt/xray/config.json** из раздела **inbounds**, где описан протокол **shadowsocks**.*
-* **<ПАРОЛЬ>** - пароль. *Берется из файла **/opt/xray/config.json** из раздела **inbounds**, где описан протокол **shadowsocks**.*
+В поле **Proxy Confuguration URL** указываем vless-ссылку (копируем из NekoBox).
+Можно указать в комментариях и другие ссылки, чтобы в случае аварии
+раскомментировать и использовать другую ссылку на подключение.
 
-Перезапускаем **sing-box**
-```
-service sing-box restart
-```
-Теперь трафик до заблокированных сайтов должен ходить через **vpn-сервер**, а весь остальной через местного провайдера.
+В поле **User Domains List** указываем свои домены, которые должны посещаться
+через прокси.
 
-<a name="clients-openwrt-dns-resolve">
+Нажимаем **Save & Apply**.
 
-### Устанавливаем на роутер шифрование DNS-запросов
+В браузере компьютера, подключенного к роутеру, идем на
+[страницу](https://whoer.net/ru) и убеждаемся, что ваш ip не российский. 
 
-*Шифрование DNS-запросов необходимо для получения правильного **ip-адреса**, если провайдер перехватывает DNS-запросы и вместо правильного **ip-адреса** выдает фейковый.*
-
-Запускаем вновь скрипт
-```
-sh <(wget -O - https://raw.githubusercontent.com/itdoginfo/domain-routing-openwrt/master/getdomains-install.sh)
-```
-* На запрос выбора туннеля выбираем **Skip this step**: 5
-* На запрос выбора приложения шифрования DNS выбираем **Stubby**: 3
-* На запрос выбора страны выбираем **Skip script creation**: 4
 
 <a name="clients-openwrt-server-restart">
 
@@ -881,21 +837,31 @@ crontab -e
 Нужно попытаться загрузить страницу, после в консоли браузера выполнить команду
 
 ```
-console.log(["config ipset\nlist name 'vpn_domains'"].concat([...new Set(performance.getEntriesByType('resource').map(r => (new URL(r.name).hostname)))].map(res => (`list domain '${res}'`))).join('\n'));
+console.log([...new Set(performance.getEntriesByType('resource').map(r => (new URL(r.name).hostname)))].map(res => (`${res}`)).join(',\n'));
 ```
 
-В консоли будет список всех доменов, к которым обращалась страница. Возможно, какие-то домены уже есть в списке, а какие-то не нужны. Нужно сравнить домены с теми, что храняться в файле **/tmp/dnsmasq.d/domains.lst**
-и внести в файл **/etc/config/dhcp** в том виде, который получится в консоли. После внесения изменений нужно перегрузить dhcp сервер.
+В консоли будет список всех доменов, к которым обращалась страница.
+Возможно, какие-то домены уже есть в списке, а какие-то не нужны.
+Нужно сравнить имена доменов с теми, что указаны в поле **User Domains List**
+и внести в поле недостающие.
 
-```
-service odhcpd restart
-```
+Нажимаем **Save & Apply**.
 
 <a name="windows-dns-cash-clean">
 
 # Очистка DNS-кэша
 В Windows в командной строке ввести
+
 ```
 ipconfig /flushdns
 ```
+<a name="add-more">
+
+# Что еще можно установить на этот сервер
+
+Можно на этот сервер поставить:
+* Личное файловое хранилище [**Seafile**](https://github.com/margazun/vds-seafile-server)
+* Личный сервер для удаленного управления клиентами [**RustDesk**](https://github.com/margazun/2025-rustdesk-server),
+взамен **TeamViewer** и **AnyDesk**
+
 Всем добра и удачи
