@@ -247,11 +247,75 @@ server {
 
 *В [архиве](fake-site/html.zip) сайт в котором на странице отображается 1000 фото выбранных случайным образом. Можно его использовать )))*
 
+В файл ``/etc/nginx/nginx.conf`` внесем изменения
+
+```
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+	worker_connections 768;
+}
+
+http {
+	sendfile on;
+	tcp_nopush on;
+	types_hash_max_size 2048;
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+	ssl_prefer_server_ciphers on;
+	access_log /var/log/nginx/access.log;
+	gzip on;
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+ 
+  client_body_timeout 12;
+  client_header_timeout 12;
+  keepalive_timeout 15;
+  send_timeout 10;
+}
+
+stream {
+  upstream xray_backend {
+    server 127.0.0.1:8443;
+  }
+  
+  upstream domain_backend {
+    server 127.0.0.1:444;
+  }
+  
+  map $ssl_preread_server_name $backend {
+    default                       xray_backend;
+  }
+  
+  server {
+    listen 443;
+    proxy_pass $backend;
+    ssl_preread on;
+  }
+}
+```
+
+*Небольшие пояснения*
+
+**Nginx** будет слушать 443 порт, трафик, предназначенный для будущих доменов
+и сервисов будет перенаправлять на 444 порт, а весь остальной трафик будет
+отдавать **xray**.
+
+Сейчас, пока нет других доменов и сервисов, весь трафик будет идти в **xray**.
+
 Перезапускаем **nginx**
+
 ```
 systemctl restart nginx
 ```
+
 Проверяем, что с **nginx** все в порядке
+
 ```
 systemctl status nginx
 ```
@@ -378,7 +442,7 @@ touch /opt/xray/config.json
       }
     },
     {
-      "port": 443,
+      "port": 8443,
       "protocol": "vless",
       "tag": "vless_tls",
       "settings": {
