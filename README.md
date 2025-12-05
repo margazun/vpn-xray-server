@@ -439,6 +439,21 @@ touch /opt/xray/config.json
         "method": "2022-blake3-aes-128-gcm",
         "password": "<SSL-ключ>",
         "network": "tcp,udp"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          },
+          "acceptProxyProtocol": false
+        },
+        "fragment": {
+          "packets": "tlshello",
+          "length": "80-120",
+          "interval": "5-10"
+        }
       }
     },
     {
@@ -493,6 +508,17 @@ touch /opt/xray/config.json
               "keyFile": "/etc/letsencrypt/live/<example.com>/privkey.pem"
             }
           ]
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          },
+          "acceptProxyProtocol": false
+        },
+        "fragment": {
+          "packets": "tlshello",
+          "length": "100-200",
+          "interval": "10-20"
         }
       },
       "sniffing": {
@@ -521,6 +547,11 @@ touch /opt/xray/config.json
         "security": "none",
         "wsSettings": {
           "path": "/Загадочный_ничего_не_значащий_путь"
+        },
+        "fragment": {
+          "packets": "all",
+          "length": "200-300",
+          "interval": "20-30"
         }
       }
     }
@@ -528,7 +559,14 @@ touch /opt/xray/config.json
   "outbounds": [
     {
       "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "streamSettings": {
+        "fragment": {
+          "packets": "tlshello",
+          "length": "100-200",
+          "interval": "10-20"
+        }
+      }
     },
     {
       "protocol": "blackhole",
