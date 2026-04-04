@@ -16,7 +16,8 @@
     - [Добавление ежедневной перезагрузки сервера](#server-restart)
 1. [Настройка клиентов для подключения к серверу](#clients)
     - [Установка и настройка клиента для Windows](#clients-windows)
-        - [Установка и запуск NekoBox](#clients-windows-install)
+        - [Установка,запуск и настройка V2rayN](#clients-windows-v2rayn)
+        - [Установка и запуск NekoBox](#clients-windows-nekobox)
         - [Настройка NekoBox](#clients-windows-setup)
           - [Настройка подключений](#clients-windows-setup-servers)
             - [Настройка профиля подключения типа Shadowsocks](#clients-windows-setup-servers-shadowsocks)
@@ -620,7 +621,67 @@ crontab -e
 
 ## Установка и настройка клиента для Windows
 
-<a name="clients-windows-install">
+<a name="clients-windows-v2rayn">
+
+### Установка, запуск и настройка V2rayN
+
+*Проект **NekoBox** для Windows закрыт и больше не будет поддерживаться.*
+
+Будем ставить **V2rayN**
+
+Переходим на [страницу](https://github.com/2dust/v2rayN/releases) и находим релиз с пометкой *Latest*. На момент написания это был 7.19.5
+
+Нажимаем на зеленую кнопку **Latest**. В разделе Assets находим **v2rayN-windows-64.zip** и скачиваем его.
+После скачивания разархивируем его куда-нибудь на системный диск и запускаем файл **v2rayN.exe**
+
+Должно появится окно программы
+
+![start](img/v2rayn/v2rayn001-start.png)
+
+Переключимся на русский язык
+
+![language](img/v2rayn/v2rayn002-language.png)
+
+Переключимся на российские установки
+
+![region](img/v2rayn/v2rayn003-region.png)
+
+Перезагрузим программу из панели задач
+
+![restart](img/v2rayn/v2rayn004-exit.png)
+
+Переключим маршрутизацию. Если такой пункт отсутствует, подождем немного загрузки, через минуту он появится
+
+![routing](img/v2rayn/v2rayn005-routing.png)
+
+Если есть ссылка для подключения, то копируем ее в буфер обмена и подключаем
+
+![add-server](img/v2rayn/v2rayn006-add-server.png)
+
+Если ссылки нет, создаем подключение к нашему серверу по протоколу VLESS
+
+![add-vless-server-command](img/v2rayn/v2rayn009-add-vless-server.png)
+
+И заполняем поля
+
+![add-vless-server](img/v2rayn/v2rayn010-add-vless-server.png)
+
+*Подключения по протоколам ShadowSocks и VLESS over Websocket теперь считаются небезопасными и устаревшими и в будущих
+версиях **Xray** будут удалены. В клиенте **V2rayN** уже сейчас они, хоть и работают, но тесты уже не проходят.*
+
+Включаем наш прокси
+
+![proxy-on](img/v2rayn/v2rayn011-proxy-on.png)
+
+Проверяем, что все работает правильно:
+
+* Определяем **IP** на [сайте](https://2ip.ru/) - должен быть определен как ip вашего провайдера, местоположение должно быть Россия
+* Определяем **IP** на [сайте](https://whoer.net/ru) - должен быть определен как ip вашего vds сервера, местоположение должно быть Нидерланды
+
+Если все так и есть, значит прокси и маршрутизация работают))
+
+
+<a name="clients-windows-nekobox">
 
 ### Установка и запуск NekoBox
 
